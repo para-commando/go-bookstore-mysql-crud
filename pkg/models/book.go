@@ -2,6 +2,7 @@ package models
 
 import (
 	"go-bookstore-mysql-crud/pkg/config"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -25,23 +26,72 @@ func init() {
 	DB.AutoMigrate(&Book{})
 }
 
-func (b *Book) CreateBook() *Book {
-	if !DB.NewRecord(b) {
+func (b *Book) CreateBook() (*gorm.DB, *Book) {
+	// 	Before saving to the database:
+	// b.ID == 0 means the object is new and hasn’t been saved yet.
+	// After saving to the database:
+	// GORM will set the ID to the value assigned by the database (usually a positive integer).
+	if b.ID != 0 {
 		// The record is not new, so you might want to handle this case
 		// For example, return nil or an error, or just skip creation
-		return nil
+		return nil, nil
 	}
-	DB.Create(&b) // This creates the record in the database
-	return b
+	db := DB.Create(&b) // This creates the record in the database
+	if db.Error != nil {
+		log.Println("Error creating book")
+		return nil, nil
+	}
+	return db, b
 }
 
-func GetAllBooks() []Book {
+func GetAllBooks() (*gorm.DB, []Book) {
 	var Books []Book
 	// If you pass a slice of a type that is not mapped to a table in the DB (i.e., not a GORM model),
 	// GORM will not know how to map it to a table and will return an error.
 	// For example, if you define:
 	// type Foo struct { Bar string }
 	// and call DB.Find(&[]Foo{}), GORM will look for a table named "foos" and fail if it doesn't exist.
-	DB.Find(&Books) // This retrieves all records from the database
-	return Books
+	db := DB.Find(&Books) // This retrieves all records from the database
+
+	if db.Error == gorm.ErrRecordNotFound {
+		log.Println("No books found")
+		return nil, nil
+	}
+
+	return db, Books
+}
+
+func GetBookById(Id int64) (*Book, *gorm.DB) {
+	var getBook Book
+	db := DB.Where("ID=?", Id).Find(&getBook)
+
+	if db.Error == gorm.ErrRecordNotFound {
+		log.Println("Book not found")
+		return nil, db
+	}
+
+	return &getBook, db
+}
+
+func DeleteBook(ID int64) (*gorm.DB, Book) {
+	var book Book
+	db := DB.Where("ID=?", ID).Delete(book)
+	return db, book
+}
+
+func UpdateBook(id int64, updatedData *Book) (*gorm.DB, *Book) {
+	var book Book
+	db := DB.First(&book, id)
+
+	if db.Error == gorm.ErrRecordNotFound {
+		log.Println("Book not found")
+		return db, nil
+	}
+	if db.Error != nil {
+		log.Println("Error updating book")
+		return db, nil
+	}
+
+	db = DB.Model(&book).Updates(updatedData)
+	return db, &book
 }
