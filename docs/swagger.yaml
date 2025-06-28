@@ -1,0 +1,238 @@
+basePath: /
+definitions:
+  models.BookRequest:
+    description: Book request model for API documentation
+    properties:
+      author:
+        description: |-
+          @Description Author of the book
+          @Example "F. Scott Fitzgerald"
+        example: F. Scott Fitzgerald
+        type: string
+      price:
+        description: |-
+          @Description Price of the book
+          @Example "$15.99"
+        example: $15.99
+        type: string
+      title:
+        description: |-
+          @Description Title of the book
+          @Example "The Great Gatsby"
+        example: The Great Gatsby
+        type: string
+    required:
+    - author
+    - price
+    - title
+    type: object
+  models.BookResponse:
+    description: Book response model for API documentation
+    properties:
+      author:
+        description: |-
+          @Description Author of the book
+          @Example "F. Scott Fitzgerald"
+        example: F. Scott Fitzgerald
+        type: string
+      created_at:
+        description: |-
+          @Description When the book was created
+          @Example "2023-01-01T00:00:00Z"
+        example: "2023-01-01T00:00:00Z"
+        type: string
+      id:
+        description: |-
+          @Description Unique identifier for the book
+          @Example 1
+        example: 1
+        type: integer
+      price:
+        description: |-
+          @Description Price of the book
+          @Example "$15.99"
+        example: $15.99
+        type: string
+      title:
+        description: |-
+          @Description Title of the book
+          @Example "The Great Gatsby"
+        example: The Great Gatsby
+        type: string
+      updated_at:
+        description: |-
+          @Description When the book was last updated
+          @Example "2023-01-01T00:00:00Z"
+        example: "2023-01-01T00:00:00Z"
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: A REST API for managing books in a bookstore
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Go Bookstore API
+  version: "1.0"
+paths:
+  /books:
+    get:
+      consumes:
+      - application/json
+      description: Retrieve all books from the database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: List of books
+          schema:
+            items:
+              $ref: '#/definitions/models.BookResponse'
+            type: array
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get all books
+      tags:
+      - books
+    post:
+      consumes:
+      - application/json
+      description: Add a new book to the database
+      parameters:
+      - description: Book object
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/models.BookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Created book
+          schema:
+            $ref: '#/definitions/models.BookResponse'
+        "400":
+          description: Bad request - Invalid book data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Create a new book
+      tags:
+      - books
+  /books/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Remove a book from the database by ID
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Deleted book
+          schema:
+            $ref: '#/definitions/models.BookResponse'
+        "400":
+          description: Bad request - Invalid ID
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Delete a book
+      tags:
+      - books
+    get:
+      consumes:
+      - application/json
+      description: Retrieve a specific book by its ID
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Book details
+          schema:
+            $ref: '#/definitions/models.BookResponse'
+        "400":
+          description: Bad request - Invalid ID
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Get a book by ID
+      tags:
+      - books
+    put:
+      consumes:
+      - application/json
+      description: Update an existing book's information
+      parameters:
+      - description: Book ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Updated book object
+        in: body
+        name: book
+        required: true
+        schema:
+          $ref: '#/definitions/models.BookRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Updated book
+          schema:
+            $ref: '#/definitions/models.BookResponse'
+        "400":
+          description: Bad request - Invalid ID or book data
+          schema:
+            additionalProperties: true
+            type: object
+        "500":
+          description: Internal server error
+          schema:
+            additionalProperties: true
+            type: object
+      summary: Update a book
+      tags:
+      - books
+securityDefinitions:
+  api_key:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

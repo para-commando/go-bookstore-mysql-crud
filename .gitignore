@@ -1,0 +1,47 @@
+# Environment variables and secrets
+.env
+*.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Configuration files with secrets
+config.json
+secrets.json
+*.key
+*.pem
+*.crt
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Go specific
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+go.work
+
+# Build artifacts
+bin/
+dist/
+build/
+
+# Logs
+*.log
+logs/
+
+# Temporary files
+tmp/
+temp/ 

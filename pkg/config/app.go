@@ -1,6 +1,8 @@
 package config
 
 import (
+	"fmt"
+
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -8,13 +10,14 @@ import (
 var DB *gorm.DB
 
 func ConnectDatabase() {
-	dsn := "root:Niveus@1233@tcp(localhost:3306)/BOOK_STORE?charset=utf8mb4&parseTime=True&loc=Local"
+	config := LoadConfig()
+
 	var err error
-	DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	DB, err = gorm.Open(mysql.Open(config.GetDSN()), &gorm.Config{})
 	if err != nil {
+		fmt.Printf("error while connecting to database: %v", err.Error())
 		panic("failed to connect to database")
 	}
-
 }
 
 func GetDatabase() *gorm.DB {
